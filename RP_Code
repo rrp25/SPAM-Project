@@ -1,0 +1,49 @@
+RGB = imread('braille.png');
+I = rgb2gray(RGB);
+len = length(I);
+interval = len/6;
+I2 = imcrop(I,[10 0 interval 204]);
+x = 10;
+I7 = imcrop(I,[interval 1.51 interval 2*interval]);
+I8 = imcrop(I,[2*interval 1.51 interval 3*interval]);
+I9 = imcrop(I,[3*interval 1.51 interval 4*interval]);
+I10 = imcrop(I,[4*interval 1.51 interval 5*interval]);
+I11 = imcrop(I,[5*interval 1.51 interval 6*interval]);
+
+h = ones(5,5) / 25;
+I3=imfilter(I2,h);
+I4 = imadjust(I3);
+I5 = imcomplement(I4);
+se = strel('disk',1);
+I6 = imdilate(I5,se);
+
+
+
+subplot(4,4,1)
+imshow(RGB)
+title('rgb')
+subplot(4,4,2)
+imshow(I)
+title('gray Image')
+subplot(4,4,3)
+imshow(I2)
+title('Cropped Image')
+subplot(4,4,4)
+imshow(I3)
+title('filtered Image')
+subplot(4,4,5)
+imshow(I4)
+title('contrast Image')
+subplot(4,4,6)
+imshow(I5)
+title('complement Image')
+subplot(4,4,7)
+imshow(I7)
+subplot(4,4,8)
+imshow(I8)
+subplot(4,4,9)
+imshow(I9)
+subplot(4,4,10)
+imshow(I10)
+subplot(4,4,11)
+imshow(I11)
