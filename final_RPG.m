@@ -75,8 +75,15 @@ imshow(GCI)
 axis on;
 title('Gray Cropped Image')
 
-% Run loop to crop each character to equal size and then plot it on same figure
 
+% Find sizes of cropped image to initialize cell array (use interval for
+% column length)
+[rows, columns, colors] = size(GCI);
+cc = cell(rows,round(interval),colors);
+
+% Run loop to crop each character to equal size and then plot it on same 
+% figure. Also, create variables for each cropped image to use during
+% further processing.
 for k = 1:characters
     
     cropped_char1 = imcrop(GCI,[0 0 interval size(GCI,[1])]);
@@ -86,4 +93,10 @@ for k = 1:characters
     subplot(4,4,k+3);
 	imshow(cropped_char2);
     
+    cc0 = cropped_char1;
+    cc{k} = imcrop(GCI,[(k)*interval 1.51 interval (k+1)*interval]);
 end
+
+example = cc{1};
+subplot(4,4,15)
+imshow(example)
