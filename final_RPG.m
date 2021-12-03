@@ -1,7 +1,9 @@
+clear
+
 % Translate image of interest by loading it into line of code below with
 % exact file name 
 
-RGB = imread('mathworks.JPG');
+RGB = imread('alphabet3.JPG');
 
 % Take the red channel.
 grayImage = RGB(:, :, 1);
@@ -60,6 +62,11 @@ len = length(GCI);
 characters = round(len/180);
 interval = round(len/characters);
 
+length_rounded = characters*interval;
+addedval = round((length_rounded - len)/2);
+croppedImage = RGB(row1:row2, col1-addedval:col2+addedval, :);
+GCI = rgb2gray(croppedImage);
+
 
 % Create figure to plot original image and show cropped image next to it
 figure
@@ -84,26 +91,22 @@ cc = zeros(rows,interval);
 % Run loop to crop each character to equal size and then plot it on same 
 % figure. Also, create variables for each cropped image to use during
 % further processing.
-for k = 1:characters
+for k = 1:characters-1
     
     cropped_char1 = imcrop(GCI,[0 0 interval size(GCI,[1])]);
     subplot(4,4,3);
     imshow(cropped_char1);
-    cropped_char2 = imcrop(GCI,[(k)*interval 0 interval (k+1)*interval]);
+    cropped_char2(:,:,k) = imcrop(GCI,[(k)*interval 0 interval (k+1)*interval]);
     subplot(4,4,k+3);
-	imshow(cropped_char2);
+	imshow(cropped_char2(:,:,k));
     
     % Create first cropped character for future reference
     cc0 = cropped_char1;
     % Create remaining cropped characters for each interval point
-    cc(:,:,k) = cropped_char2;
     
 end
 
-% a = zeros(size(GCI));
-% for k = 1:characters
-%     a(k) = cc{k};
-% end
+
 
 %%
 
@@ -111,18 +114,24 @@ threshold = 1000;
 boxcc0 = zeros(1,6);
 numBlackPixelscc0 = zeros(1,6);
 
-upperLeftcc0 = cc0(1:69,1:90,:);
-upperRightcc0 = cc0(1:69,91:180,:);
-middleLeftcc0 = cc0(70:139,1:90,:);
-middleRightcc0 = cc0(70:139,91:180,:);
-bottomLeftcc0 = cc0(140:209,1:90,:);
-bottomRightcc0 = cc0(140:209,91:180,:);
+row1 = round(rows/3);
+row2 = round(rows*2/3);
+row3 = round(rows);
+col1 = round(interval/2);
+col2 = interval;
+
+upperLeftcc0 = cc0(1:row1,1:col1,:);
+upperRightcc0 = cc0(1:row1,col1:col2,:);
+middleLeftcc0 = cc0(row1:row2,1:col1,:);
+middleRightcc0 = cc0(row1:row2,col1:col2,:);
+bottomLeftcc0 = cc0(row2:row3,1:col1,:);
+bottomRightcc0 = cc0(row2:row3,col1:col2,:);
 
 numBlackPixelscc0(1) = sum(upperLeftcc0 == 0,'all');
-numBlackPixelscc0(3) = sum(upperRightcc0 == 0,'all');
-numBlackPixelscc0(5) = sum(middleLeftcc0 == 0,'all');
-numBlackPixelscc0(2) = sum(middleRightcc0 == 0,'all');
-numBlackPixelscc0(4) = sum(bottomLeftcc0 == 0,'all');
+numBlackPixelscc0(4) = sum(upperRightcc0 == 0,'all');
+numBlackPixelscc0(2) = sum(middleLeftcc0 == 0,'all');
+numBlackPixelscc0(5) = sum(middleRightcc0 == 0,'all');
+numBlackPixelscc0(3) = sum(bottomLeftcc0 == 0,'all');
 numBlackPixelscc0(6) = sum(bottomRightcc0 == 0,'all');
 
 
@@ -232,8 +241,8 @@ end
 
 fprintf(outputcc0)
 
-for k = 1:characters
-[output] = decode_character(characters,cc,threshold);
-fprintf(output)
+for k = 1:characters-1
+[output] = decode_character(rows,interval,characters,cropped_char2,threshold);
+fprintf(output(k))
 end
 
