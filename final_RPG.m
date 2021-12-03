@@ -2,7 +2,6 @@
 % exact file name 
 
 RGB = imread('alphabet2.JPG');
-[rows, columns, numberOfColorChannels] = size(RGB);
 
 % Take the red channel.
 grayImage = RGB(:, :, 1);
@@ -44,7 +43,6 @@ end
 % figure
 % imshow(GCI)
 % axis on;
-% hp = impixelinfo(); % Show x,y and RGB as you mouse around.
 % h = imdistline;
 % fcn = makeConstrainToRectFcn('imline',get(gca,'XLim'),get(gca,'YLim'));
 % setDragConstraintFcn(h,fcn); 
