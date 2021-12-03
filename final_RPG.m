@@ -58,7 +58,7 @@ GCI = rgb2gray(croppedImage);
 % known width (approx. 180 pixels). Use this to determine interval length
 len = length(GCI);
 characters = round(len/180);
-interval = len/characters;
+interval = round(len/characters);
 
 
 % Create figure to plot original image and show cropped image next to it
@@ -79,7 +79,7 @@ title('Gray Cropped Image')
 % Find sizes of cropped image to initialize cell array (use interval for
 % column length)
 [rows, columns] = size(GCI);
-cc = cell(rows,round(interval));
+cc = zeros(rows,interval);
 
 % Run loop to crop each character to equal size and then plot it on same 
 % figure. Also, create variables for each cropped image to use during
@@ -89,16 +89,21 @@ for k = 1:characters
     cropped_char1 = imcrop(GCI,[0 0 interval size(GCI,[1])]);
     subplot(4,4,3);
     imshow(cropped_char1);
-    cropped_char2 = imcrop(GCI,[(k)*interval 1.51 interval (k+1)*interval]);
+    cropped_char2 = imcrop(GCI,[(k)*interval 0 interval (k+1)*interval]);
     subplot(4,4,k+3);
 	imshow(cropped_char2);
     
     % Create first cropped character for future reference
     cc0 = cropped_char1;
     % Create remaining cropped characters for each interval point
-    cc{k} = imcrop(GCI,[(k)*interval 1.51 interval (k+1)*interval]);
-    cc(k) = cell2mat(cc{k});
+    cc(:,:,k) = cropped_char2;
+    
 end
+
+% a = zeros(size(GCI));
+% for k = 1:characters
+%     a(k) = cc{k};
+% end
 
 %%
 
@@ -228,7 +233,7 @@ end
 fprintf(outputcc0)
 
 for k = 1:characters
-[output] = decode_character(characters,cc{k},threshold);
+[output] = decode_character(characters,cc,threshold);
 fprintf(output)
 end
 
