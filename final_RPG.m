@@ -1,3 +1,6 @@
+% Translate image of interest by loading it into line of code below with
+% exact file name 
+
 RGB = imread('alphabet2.JPG');
 [rows, columns, numberOfColorChannels] = size(RGB);
 
@@ -8,7 +11,7 @@ grayImage = RGB(:, :, 1);
 stdImage = stdfilt(grayImage);
 % Threshold the image.
 binaryImage = stdImage > 5;
-% Get rid of small blobs.
+% Get rid of small marks, if any.
 binaryImage = bwareafilt(binaryImage, [70, inf]); % Keep only if 70 pixels or larger.
 
 % Find the bounding box.
@@ -19,14 +22,18 @@ binaryImage = bwareafilt(binaryImage, [70, inf]); % Keep only if 70 pixels or la
 if min(dotColumns)-31 < 0
     fprintf('The image does not have enough space before the first character for the bounding box')
     return
+    
 elseif max(dotColumns)+31 > length(RGB) 
     fprintf('The image does not have enough space after the last character for the bounding box')
     return
+    
 else
+    
 row1 = min(dotRows);
 row2 = max(dotRows);
 col1 = min(dotColumns)-31; % see note below
 col2 = max(dotColumns)+31; % see note below
+
 end
 
 %% NOTE
