@@ -5,7 +5,7 @@ clear
 % Translate image of interest by loading it into line of code below with
 % exact file name 
 
-RGB = imread('laplace.JPG');
+RGB = imread('mathworks.JPG');
 
 % Take the red channel.
 grayImage = RGB(:, :, 1);
@@ -42,7 +42,8 @@ end
 
 %% NOTE
 % We used imdistline to determine the distance between two characters.
-% This value was used for determining bounding box width on initial crop.
+% This value was used for determining bounding box width on initial crop,
+% because it won't change since our formatting is the same for all inputs
 % Distance = 62 pixels -> half distance for either side = 31 pixels
 
 % figure
