@@ -5,7 +5,7 @@ clear
 % Translate image of interest by loading it into line of code below with
 % exact file name 
 
-RGB = imread('brl_fourier2.JPG');
+RGB = imread('laplace.JPG');
 
 % Take the red channel.
 grayImage = RGB(:, :, 1);
