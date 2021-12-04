@@ -1,3 +1,5 @@
+%% Creation of Bounding Box
+
 clear
 
 % Translate image of interest by loading it into line of code below with
@@ -12,14 +14,14 @@ grayImage = RGB(:, :, 1);
 stdImage = stdfilt(grayImage);
 % Threshold the image.
 binaryImage = stdImage > 5;
-% Get rid of small marks, if any.
-binaryImage = bwareafilt(binaryImage, [70, inf]); % Keep only if 70 pixels or larger.
+% Get rid of small marks, if any. Keep only if 70 pixels or larger.
+binaryImage = bwareafilt(binaryImage, [70, inf]); 
 
 % Find the bounding box.
 [dotRows, dotColumns] = find(binaryImage);
 
 % If there are not enough pixels before or after the cropped image, stop
-% function to prevent inaccurate translation
+% function to prevent inaccurate translation.
 if min(dotColumns)-31 < 0
     fprintf('The image does not have enough space before the first character for the bounding box')
     return
@@ -30,7 +32,7 @@ elseif max(dotColumns)+31 > length(RGB)
     
 else
     
-% Create new dimensions for the cropped image    
+% Create new dimensions for the cropped image.    
 row1 = min(dotRows);
 row2 = max(dotRows);
 col1 = min(dotColumns)-31; % see note below
@@ -50,7 +52,8 @@ end
 % fcn = makeConstrainToRectFcn('imline',get(gca,'XLim'),get(gca,'YLim'));
 % setDragConstraintFcn(h,fcn); 
 % title('Cropped Image with Distance Line')
-%%
+
+%% Pre-Processing to Create Cropped Characters
 
 % Crop it.
 croppedImage = RGB(row1:row2, col1:col2, :);
@@ -59,7 +62,7 @@ GCI = rgb2gray(croppedImage);
 
 % Calculate image length and then estimate number of characters based on 
 % known width (approx. 180 pixels). Use this to determine interval length.
-% Rounded interval used in order to create integers for referencing
+% Rounded interval used in order to create integers for referencing.
 len = length(GCI);
 characters = round(len/180);
 interval = round(len/characters);
@@ -75,7 +78,7 @@ croppedImage = RGB(row1:row2, col1-addedval:col2+addedval, :);
 GCI = rgb2gray(croppedImage);
 
 
-% Create figure to plot original image and show cropped image next to it
+% Create figure to plot original image and show cropped image next to it.
 figure
 hold on
 
@@ -90,7 +93,7 @@ axis on;
 title('Gray Cropped Image')
 
 
-% Find sizes of cropped image for later reference
+% Find sizes of cropped image for future reference.
 [rows, columns] = size(GCI);
 
 % Run loop to crop each character to equal size and then plot it on same 
@@ -115,32 +118,33 @@ end
 
 
 
-%%
+%% Translation of Braille Characters into English
 
 % Threshold established by looking at number of summed black pixels in
-% filled dot vs. unfilled dot
+% filled dot vs. unfilled dot.
 threshold = 1000;
-% Initialize matrix for each location in cropped box & for black pixel sum
+
+% Initialize matrix for each location in cropped box & for black pixel sum.
 boxcc0 = zeros(1,6);
 numBlackPixelscc0 = zeros(1,6);
 
 % Create rows and columns of equal size for splitting up each cropped image
-% into 1/6 segments
+% into 1/6 segments.
 row1 = round(rows/3);
 row2 = round(rows*2/3);
 row3 = round(rows);
 col1 = round(interval/2);
 col2 = interval;
 
-% Create cropped dots for individual analysis within cropped image
-upperLeftcc0 = cc0(1:row1,1:col1,:);
-upperRightcc0 = cc0(1:row1,col1:col2,:);
-middleLeftcc0 = cc0(row1:row2,1:col1,:);
-middleRightcc0 = cc0(row1:row2,col1:col2,:);
-bottomLeftcc0 = cc0(row2:row3,1:col1,:);
-bottomRightcc0 = cc0(row2:row3,col1:col2,:);
+% Create cropped dots for individual analysis within cropped character.
+upperLeftcc0 = cc0(1:row1,1:col1);
+upperRightcc0 = cc0(1:row1,col1:col2);
+middleLeftcc0 = cc0(row1:row2,1:col1);
+middleRightcc0 = cc0(row1:row2,col1:col2);
+bottomLeftcc0 = cc0(row2:row3,1:col1);
+bottomRightcc0 = cc0(row2:row3,col1:col2);
 
-% Sum up the number of black pixels in each segment
+% Sum up the number of black pixels in each segment.
 numBlackPixelscc0(1) = sum(upperLeftcc0 == 0,'all');
 numBlackPixelscc0(4) = sum(upperRightcc0 == 0,'all');
 numBlackPixelscc0(2) = sum(middleLeftcc0 == 0,'all');
@@ -150,7 +154,7 @@ numBlackPixelscc0(6) = sum(bottomRightcc0 == 0,'all');
 
 % Determine if the number is greater than the threshold, then assign value
 % of 1 if it is. Create a matrix from the initialized box with
-% corresponding 0 & 1 values
+% corresponding 0 & 1 values.
 for i = 1:6
     if numBlackPixelscc0(i) > threshold
         boxcc0(i) = 1;
@@ -241,7 +245,7 @@ elseif boxcc0 == [0 0 0 0 0 0]
       
 end
 
-% Plot if desired to see individual dots cropped on their own figure
+% Plot if desired to see individual dots cropped on their own figure.
 % figure
 % subplot(3,2,1);
 % imshow(upperLeftcc0);
@@ -256,11 +260,11 @@ end
 % subplot(3,2,6);
 % imshow(bottomRightcc0);
 
-% Output first character
+% Output first character.
 fprintf(outputcc0)
 
-% Run code for remaining characters -> see decode character function
-% Output translated text of remaining characters
+% Run code for remaining characters -> see decode character function.
+% Output translated text of remaining characters.
 for k = 1:characters-1
 [output] = decode_character(rows,interval,characters,cropped_char2,threshold);
 fprintf(output(k))
