@@ -270,3 +270,4 @@ for k = 1:characters-1
 [output] = decode_character(rows,interval,characters,cropped_char2,threshold);
 fprintf(output(k))
 end
+fprintf('\n')
